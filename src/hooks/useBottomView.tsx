@@ -36,7 +36,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheet> = (props) => {
 			enableHandlePanningGesture={false}
 			backgroundStyle={{ backgroundColor: 'transparent' }}
 			ref={modalRef}
-			index={0}
+			index={-1}
 			snapPoints={snapPoints}
 			enableDynamicSizing={false}
 			backdropComponent={renderBackdrop}

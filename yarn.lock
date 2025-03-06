@@ -8573,12 +8573,17 @@ react-native-slider@^0.11.0:
   dependencies:
     prop-types "^15.5.6"
 
-react-native-tab-view@^3.5.2:
-  version "3.5.2"
-  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-3.5.2.tgz#2789b8af6148b16835869566bf13dc3b0e6c1b46"
-  integrity sha512-nE5WqjbeEPsWQx4mtz81QGVvgHRhujTNIIZiMCx3Bj6CBFDafbk7XZp9ocmtzXUQaZ4bhtVS43R4FIiR4LboJw==
+react-native-system-setting@1.8.0-alpha.0:
+  version "1.8.0-alpha.0"
+  resolved "https://registry.npmmirror.com/react-native-system-setting/-/react-native-system-setting-1.8.0-alpha.0.tgz#f59950ce25764f41c6c66e2bf0093d65b6c241cb"
+  integrity sha512-8Ahmo6VVsX5L+sip6WPcIDNncUeAHC3ZGSc/jMgAOGpxqiBBLoUxDccnydGLOSLvtWci5NELGf+KTbdlxRfTtA==
+
+react-native-tab-view@4.0.5:
+  version "4.0.5"
+  resolved "https://registry.npmmirror.com/react-native-tab-view/-/react-native-tab-view-4.0.5.tgz#d12ec7dfd260c6acb247a401b3fc4abe6a3d466c"
+  integrity sha512-Xn3TpYo4yvKRC/f4+cOcvsXlitdnSaYkacshckrEI3JiDmFKNFIRVNxtZFggm4MwbJafq2RzuzR6xrgKoxgkTw==
   dependencies:
-    use-latest-callback "^0.1.5"
+    use-latest-callback "^0.2.1"
 
 react-native-track-player@^4.1.1:
   version "4.1.1"
@@ -8599,6 +8604,11 @@ react-native-view-shot@^4.0.3:
   integrity sha512-USNjYmED7C0me02c1DxKA0074Hw+y/nxo+xJKlffMvfUWWzL5ELh/TJA/pTnVqFurIrzthZDPtDM7aBFJuhrHQ==
   dependencies:
     html2canvas "^1.4.1"
+
+react-native-volume-manager@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.npmmirror.com/react-native-volume-manager/-/react-native-volume-manager-2.0.8.tgz#4217c00e975043cdc10f908c8aba2c77a05d2b46"
+  integrity sha512-aZM47/mYkdQ4CbXpKYO6Ajiczv7fxbQXZ9c0H8gRuQUaS3OCz/MZABer6o9aDWq0KMNsQ7q7GVFLRPnSSeeMmw==
 
 react-native@0.73.6:
   version "0.73.6"

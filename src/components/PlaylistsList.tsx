@@ -15,7 +15,7 @@ const ItemDivider = () => (
 )
 
 export const PlaylistsList = () => {
-	const { queue, remove, skip } = useTrackPlayerQueue()
+	const { queue, remove } = useTrackPlayerQueue()
 	const { setActiveTrack } = useActiveTrack((state) => state)
 	const currentTrack = useActiveTrackAlternative()
 	const [loadingTrackId, setLoadingTrackId] = useState<string | null>(currentTrack?.basename || '')
@@ -50,7 +50,7 @@ export const PlaylistsList = () => {
 			// 2. 使用异步延迟的方式调用 TrackPlayer 的操作，让 React 有机会先更新UI并执行动画
 			Promise.resolve().then(async () => {
 				try {
-					await skip(index, track)
+					await TrackPlayer.skip(index, track)
 					await TrackPlayer.play()
 				} catch (error) {
 					console.error('Error while trying to play track:', error)
@@ -59,7 +59,7 @@ export const PlaylistsList = () => {
 				}
 			})
 		},
-		[setActiveTrack, skip],
+		[setActiveTrack],
 	)
 	const renderItem = useCallback(
 		({ item: track, index }: { item: any; index: number }) => {

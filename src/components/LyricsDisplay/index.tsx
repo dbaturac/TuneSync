@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Animated, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import TrackPlayer, { useProgress } from 'react-native-track-player'
-import { PlayerControls } from '../PlayerControls'
-import { PlayerProgressBar } from '../PlayerProgressbar'
 
 /** 单句歌词 */
 type LyricLine = {
@@ -120,7 +118,7 @@ const CharColoredLine: React.FC<{
 						const color = interpolateGrayToWhite(localProgress)
 
 						return (
-							<Text key={`char-${i}`} style={{ color }}>
+							<Text key={`char-${i}`} style={{ color: color }}>
 								{char}
 							</Text>
 						)
@@ -146,7 +144,13 @@ const LyricsDisplay: React.FC<LyricsDisplayProps> = ({
 	const transYs = useRef(lyrics.map(() => new Animated.Value(0)))
 
 	// 使用 useProgress 获取更频繁的播放时间更新（这里每16.67ms更新一次）
-	const { position } = useProgress(refreshRate ?? 16.67)
+	const { position } = useProgress(refreshRate ?? 33)
+	useEffect(() => {
+		return () => {
+			// 停止所有动画
+			transYs.current.forEach((anim) => anim.stopAnimation())
+		}
+	}, [])
 	useEffect(() => {
 		return () => {
 			// 清理定时器
@@ -280,15 +284,6 @@ const LyricsDisplay: React.FC<LyricsDisplayProps> = ({
 					onScrollEndDrag={handleScrollEndDrag}
 				/>
 			</View>
-			{/* 这里可放进度条/播放控制等 */}
-			{!hideControler && (
-				<View style={styles.controlerContainer}>
-					<View style={{ marginTop: 'auto' }}>
-						<PlayerProgressBar style={{ marginTop: 32 }} />
-						<PlayerControls style={{ marginTop: 40 }} />
-					</View>
-				</View>
-			)}
 		</>
 	)
 }

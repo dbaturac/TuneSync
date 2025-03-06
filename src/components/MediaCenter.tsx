@@ -36,6 +36,7 @@ export const MediaCenter = memo(
 					padding: 8,
 					paddingHorizontal: 12,
 				}}
+				estimatedItemSize={30}
 				// keyExtractor={({ item }) => item.filename}
 				contentContainerStyle={{ padding: 10, paddingBottom: 128 }}
 				ItemSeparatorComponent={ItemDivider}

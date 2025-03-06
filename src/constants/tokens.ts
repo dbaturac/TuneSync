@@ -1,3 +1,11 @@
+/*
+ * @Author: zhen qian xhdp123@126.com
+ * @Date: 2025-03-06 03:50:53
+ * @LastEditors: zhen qian xhdp123@126.com
+ * @LastEditTime: 2025-03-06 15:57:00
+ * @FilePath: /TuneSync/src/constants/tokens.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 export const colors = {
 	errorColor: 'red',
 	primary: '#E76F51',
@@ -6,7 +14,9 @@ export const colors = {
 	textMuted: '#9ca3af',
 	icon: '#fff',
 	maximumTrackTintColor: 'rgba(255,255,255,0.4)',
-	minimumTrackTintColor: 'rgba(255,255,255,1)',
+	minimumTrackTintColor: 'rgba(255,255,255,0.6)',
+	minimumTrackTintColorOnTouch: 'rgba(255,255,255,1)',
+	sliderTextOnTouch: 'rgba(255,255,255,1)',
 }
 export const darkMode = {
 	colors: {

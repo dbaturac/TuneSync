@@ -96,12 +96,7 @@ export const useTrackPlayerQueue = () => {
 			url: trackUrl || '',
 			cache_dir: cache_dir_base,
 		}
-		console.log('trackToAdd', {
-			originalUrl: track.url,
-			cachedUrl: cache_dir || '',
-			url: trackUrl || '',
-			cache_dir: cache_dir_base,
-		})
+
 		await TrackPlayer.add(trackToAdd)
 	}
 	useEffect(() => {

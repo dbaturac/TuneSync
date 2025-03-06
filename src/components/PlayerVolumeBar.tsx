@@ -25,6 +25,7 @@ export const PlayerVolumeBar = ({ style }: ViewProps) => {
 						progress={progress}
 						minimumValue={min}
 						containerStyle={utilsStyles.slider}
+						panHitSlop={{ top: 50, bottom: 100, left: 50, right: 50 }} // 扩展触
 						theme={{
 							maximumTrackTintColor: colors.maximumTrackTintColor,
 							minimumTrackTintColor: colors.minimumTrackTintColor,

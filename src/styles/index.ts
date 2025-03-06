@@ -2,7 +2,7 @@
  * @Author: zhen qian xhdp123@126.com
  * @Date: 2025-02-14 04:53:47
  * @LastEditors: zhen qian xhdp123@126.com
- * @LastEditTime: 2025-03-06 03:17:14
+ * @LastEditTime: 2025-03-06 15:50:25
  * @FilePath: /TuneSync/src/styles/index.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -44,7 +44,7 @@ export const utilsStyles = StyleSheet.create({
 	},
 	slider: {
 		height: 7,
-		borderRadius: 16,
+		borderRadius: 25,
 	},
 	itemSeparator: {
 		borderColor: colors.textMuted,

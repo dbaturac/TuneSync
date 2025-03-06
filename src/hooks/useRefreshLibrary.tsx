@@ -36,8 +36,6 @@ export function useRefreshLibrary() {
 	}, [activeQueueId, setActiveQueueId, setTracks, tracksMap])
 	const runWithCache = useCallback(async () => {
 		dropOldTask()
-		// console.log('runWithCache', runWithCache)
-		// setTaskQueue({ type: 'scraping', body: [] })
 		try {
 			setLoading({ loading: true, percentage: 0, current: '' })
 			const localIndexing = indexingList.filter((el: { from: string }) => el.from === 'local')
