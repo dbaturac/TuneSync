@@ -4,7 +4,7 @@ import { MenuView } from '@react-native-menu/menu'
 import { useRouter } from 'expo-router'
 import { PropsWithChildren, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import TrackPlayer, { Track } from 'react-native-track-player'
+import { Track } from 'react-native-track-player'
 import { match } from 'ts-pattern'
 
 type TrackShortcutsMenuProps = PropsWithChildren<{ track: Track; from?: string }>
@@ -31,9 +31,9 @@ export const TrackShortcutsMenu = ({ track, children, from }: TrackShortcutsMenu
 				addTracks(track, favorateTracks)
 
 				// if the tracks is in the favorite queue, add it
-				if (activeQueueId?.startsWith('favorites')) {
-					await TrackPlayer.add(track)
-				}
+				// if (activeQueueId?.startsWith('favorites')) {
+				// 	await TrackPlayer.add(track)
+				// }
 			})
 			.with('remove-from-favorites', async () => {
 				setFavorateTracks(
@@ -43,13 +43,13 @@ export const TrackShortcutsMenu = ({ track, children, from }: TrackShortcutsMenu
 				)
 
 				// if the track is in the favorites queue, we need to remove it
-				if (activeQueueId?.startsWith('favorites')) {
-					const queue = await TrackPlayer.getQueue()
+				// if (activeQueueId?.startsWith('favorites')) {
+				// 	const queue = await TrackPlayer.getQueue()
 
-					const trackToRemove = queue.findIndex((queueTrack) => queueTrack.url === track.url)
+				// 	const trackToRemove = queue.findIndex((queueTrack) => queueTrack.url === track.url)
 
-					await TrackPlayer.remove(trackToRemove)
-				}
+				// 	await TrackPlayer.remove(trackToRemove)
+				// }
 			})
 			.with('add-to-playlist', () => {
 				// it opens the addToPlaylist modal

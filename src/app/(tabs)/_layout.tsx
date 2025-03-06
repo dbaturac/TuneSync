@@ -9,11 +9,14 @@ import { Tabs } from 'expo-router'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Animated, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 const TabsNavigation = () => {
 	const { t } = useTranslation()
 	const animatedValue = useRef(new Animated.Value(0)).current
 
 	const isLandscape = useIsLandscape()
+	const insets = useSafeAreaInsets()
+	const estimatedTabBarHeight = 60 + insets.bottom - 10
 	useShouldUpdate()
 	useEffect(() => {
 		Animated.timing(animatedValue, {
@@ -105,7 +108,7 @@ const TabsNavigation = () => {
 							position: 'absolute',
 							left: 8,
 							right: 8,
-							bottom: 78,
+							bottom: estimatedTabBarHeight,
 						}}
 					/>
 				</>

@@ -1,5 +1,5 @@
 import LibraryDropdownOptions from '@/components/LibraryDropdownOptions'
-import { StackScreenWithSearchBar } from '@/constants/layout'
+import { StackScreenWithoutSearchBar, StackScreenWithSearchBar } from '@/constants/layout'
 import { colors } from '@/constants/tokens'
 import { useTracks } from '@/store/library'
 import { defaultStyles } from '@/styles'
@@ -100,6 +100,7 @@ const PlaylistsScreenLayout = () => {
 				<Stack.Screen
 					name="mediaCenter/index"
 					options={{
+						...StackScreenWithoutSearchBar,
 						headerTitle: `${t('setting.statistics')}`,
 						headerBackVisible: true,
 						headerStyle: {

@@ -4,7 +4,7 @@ import { defaultStyles, utilsStyles } from '@/styles'
 import { memo } from 'react'
 import { StyleSheet, Text, View, ViewProps } from 'react-native'
 import { Slider } from 'react-native-awesome-slider'
-import { useSharedValue } from 'react-native-reanimated'
+import { useSharedValue, withSpring } from 'react-native-reanimated'
 import TrackPlayer, { useProgress } from 'react-native-track-player'
 
 export const PlayerProgressBar = memo(({ style }: ViewProps) => {
@@ -14,6 +14,8 @@ export const PlayerProgressBar = memo(({ style }: ViewProps) => {
 	const progress = useSharedValue(0)
 	const min = useSharedValue(0)
 	const max = useSharedValue(1)
+	const thumbScaleY = useSharedValue(1) // 用来控制缩放效果
+	const thumbScaleX = useSharedValue(1) // 用来控制缩放效果
 
 	const trackElapsedTime = formatSecondsToMinutes(position)
 	const trackRemainingTime = formatSecondsToMinutes(duration - position)
@@ -21,10 +23,15 @@ export const PlayerProgressBar = memo(({ style }: ViewProps) => {
 	if (!isSliding.value) {
 		progress.value = duration > 0 ? position / duration : 0
 	}
+	console.log('isSliding', isSliding)
 
 	return (
-		<View style={style}>
+		<View style={[style]}>
 			<Slider
+				style={{
+					transform: [{ scaleY: thumbScaleY }, { scaleX: thumbScaleX }], // 控制 thumb 的缩放
+				}}
+				panHitSlop={{ top: 50, bottom: 100, left: 50, right: 50 }} // 扩展触
 				progress={progress}
 				minimumValue={min}
 				maximumValue={max}
@@ -32,10 +39,16 @@ export const PlayerProgressBar = memo(({ style }: ViewProps) => {
 				thumbWidth={0}
 				renderBubble={() => null}
 				theme={{
-					minimumTrackTintColor: colors.minimumTrackTintColor,
+					minimumTrackTintColor: isSliding.value
+						? colors.minimumTrackTintColorOnTouch
+						: colors.minimumTrackTintColor,
 					maximumTrackTintColor: colors.maximumTrackTintColor,
 				}}
-				onSlidingStart={() => (isSliding.value = true)}
+				onSlidingStart={() => {
+					thumbScaleY.value = withSpring(1.3)
+					thumbScaleX.value = withSpring(1.02)
+					isSliding.value = true
+				}}
 				onValueChange={async (value) => {
 					await TrackPlayer.seekTo(value * duration)
 				}}
@@ -44,13 +57,14 @@ export const PlayerProgressBar = memo(({ style }: ViewProps) => {
 					if (!isSliding.value) return
 
 					isSliding.value = false
-
+					thumbScaleY.value = withSpring(1)
+					thumbScaleX.value = withSpring(1)
 					await TrackPlayer.seekTo(value * duration)
 				}}
 			/>
 
 			<View style={styles.timeRow}>
-				<Text style={styles.timeText}>{trackElapsedTime}</Text>
+				<Text style={[styles.timeText]}>{trackElapsedTime}</Text>
 
 				<Text style={styles.timeText}>
 					{'-'} {trackRemainingTime}

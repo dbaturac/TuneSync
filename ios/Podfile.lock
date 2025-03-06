@@ -133,6 +133,7 @@ PODS:
   - MMKV (1.3.9):
     - MMKVCore (~> 1.3.9)
   - MMKVCore (1.3.9)
+  - Mute (0.6.1)
   - NVActivityIndicatorView (5.1.1):
     - NVActivityIndicatorView/Base (= 5.1.1)
   - NVActivityIndicatorView/Base (5.1.1)
@@ -159,6 +160,8 @@ PODS:
     - glog
     - libevent
   - RCTRequired (0.73.6)
+  - RCTSystemSetting (1.8.0-alpha.0):
+    - React
   - RCTTypeSafety (0.73.6):
     - FBLazyVector (= 0.73.6)
     - RCTRequired (= 0.73.6)
@@ -1050,6 +1053,9 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+  - react-native-volume-manager (2.0.8):
+    - Mute
+    - React-Core
   - React-nativeconfig (0.73.6)
   - React-NativeModulesApple (0.73.6):
     - glog
@@ -1290,6 +1296,7 @@ DEPENDENCIES:
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
+  - RCTSystemSetting (from `../node_modules/react-native-system-setting`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
   - react-airplay (from `../node_modules/react-airplay`)
@@ -1324,6 +1331,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-track-player (from `../node_modules/react-native-track-player`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
+  - react-native-volume-manager (from `../node_modules/react-native-volume-manager`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1363,6 +1371,7 @@ SPEC REPOS:
     - libwebp
     - MMKV
     - MMKVCore
+    - Mute
     - NVActivityIndicatorView
     - SDWebImage
     - SDWebImageWebPCoder
@@ -1425,6 +1434,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
+  RCTSystemSetting:
+    :path: "../node_modules/react-native-system-setting"
   RCTTypeSafety:
     :path: "../node_modules/react-native/Libraries/TypeSafety"
   React:
@@ -1491,6 +1502,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-track-player"
   react-native-view-shot:
     :path: "../node_modules/react-native-view-shot"
+  react-native-volume-manager:
+    :path: "../node_modules/react-native-volume-manager"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1585,9 +1598,11 @@ SPEC CHECKSUMS:
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   MMKV: 817ba1eea17421547e01e087285606eb270a8dcb
   MMKVCore: af055b00e27d88cd92fad301c5fecd1ff9b26dd9
+  Mute: 20135a96076f140cc82bfc8b810e2d6150d8ec7e
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   RCT-Folly: cd21f1661364f975ae76b3308167ad66b09f53f5
   RCTRequired: ca1d7414aba0b27efcfa2ccd37637edb1ab77d96
+  RCTSystemSetting: c9e2f2c95480935062c5931de9344e02b0ef919b
   RCTTypeSafety: 678e344fb976ff98343ca61dc62e151f3a042292
   React: e296bcebb489deaad87326067204eb74145934ab
   react-airplay: 7cfb97ebe4ee2e81a3674d5585fa3915b2491494
@@ -1621,6 +1636,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: bf9d9d58f0f6726d4a6257088044c2595017579d
   react-native-track-player: 6dc2e2633265704b8ab6d8124b80239d4ed1f911
   react-native-view-shot: 60ef9cebe3f920d3a22747af075240172098a652
+  react-native-volume-manager: cdd3c3857158c1df7b9fbea071a9946395cee06c
   React-nativeconfig: b4d4e9901d4cabb57be63053fd2aa6086eb3c85f
   React-NativeModulesApple: 541d64309a3037060cc416db5c8a63ee5884048e
   React-perflogger: 5f49905de275bac07ac7ea7f575a70611fa988f2
@@ -1657,6 +1673,6 @@ SPEC CHECKSUMS:
   SwiftAudioEx: f6aa653770f3a0d3851edaf8d834a30aee4a7646
   Yoga: 805bf71192903b20fc14babe48080582fee65a80
 
-PODFILE CHECKSUM: c3671899168c16231def35f0b925f65267d327b3
+PODFILE CHECKSUM: 772c805925c14d51c2353dcef4344abf357505d1
 
 COCOAPODS: 1.16.2

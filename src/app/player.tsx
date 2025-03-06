@@ -1,65 +1,56 @@
-import GridBackground from '@/components/GridBackground'
 import LyricsDisplay from '@/components/LyricsDisplay'
+import LyricsToggle from '@/components/LyricsToggle'
 import { MovingText } from '@/components/MovingText'
 import { PlayerControls } from '@/components/PlayerControls'
 import { PlayerProgressBar } from '@/components/PlayerProgressbar'
 import { PlayerRepeatToggle } from '@/components/PlayerRepeatToggle'
-import { PlayerVolumeBar } from '@/components/PlayerVolumeBar'
 import { PlaylistsList } from '@/components/PlaylistsList'
 import PlaylistToggle from '@/components/PlaylistToggle'
 import { unknownTrackImageUri } from '@/constants/images'
 import { colors, fontSize, screenPadding } from '@/constants/tokens'
 import { useLrcLoader } from '@/helpers/LyricLoader'
 import CustomBottomSheet from '@/hooks/useBottomView'
-import { useFavorateStore } from '@/store/library'
+import { usePlayerBackground } from '@/hooks/usePlayerBackground'
 import { defaultStyles, utilsStyles } from '@/styles'
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import BottomSheet from '@gorhom/bottom-sheet'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useEffect, useRef, useState } from 'react'
 import {
 	showRoutePicker,
 	useAirplayConnectivity,
 	useAvAudioSessionRoutes,
 	useExternalPlaybackAvailability,
 } from 'react-airplay'
-import { useTranslation } from 'react-i18next'
-import {
-	ActivityIndicator,
-	Dimensions,
-	PressableAndroidRippleConfig,
-	StyleProp,
-	StyleSheet,
-	Text,
-	TextStyle,
-	View,
-	ViewStyle,
-} from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-	NavigationState,
-	Route,
-	SceneRendererProps,
-	TabBar,
-	TabBarIndicatorProps,
-	TabBarItemProps,
-	TabView,
-} from 'react-native-tab-view'
-import { Event, Scene } from 'react-native-tab-view/lib/typescript/src/types'
 import { useActiveTrack } from 'react-native-track-player'
+const PlayerScreen = () => {
+	const activeTrack = useActiveTrack()
+	const { height } = useWindowDimensions()
+	const { imageColors } = usePlayerBackground(activeTrack?.artwork ?? unknownTrackImageUri)
+	const modalRef = useRef<BottomSheet>(null)
+	const { top, bottom } = useSafeAreaInsets()
 
-const SongInfoRoute = ({ activeTrack, togglePlaylist, setIndex }: any) => {
+	const { lyrics, loadLrc } = useLrcLoader(activeTrack)
+	const [showLyrics, setShowLyrics] = useState(false)
+	const headerFlex = useSharedValue(1)
+	const titleOpacity = useSharedValue(1)
+	const lyricsOpacy = useSharedValue(0)
+	const lyricsModeTitleOpacity = useSharedValue(0)
+	const titleHeight = useSharedValue(60)
+	const lyricsModeTitleHeight = useSharedValue(0)
 	const isAirplayConnected = useAirplayConnectivity()
 	const isExternalPlaybackAvailable = useExternalPlaybackAvailability()
 	const routes = useAvAudioSessionRoutes()
+	useEffect(() => {
+		if (!activeTrack?.formatedTitle) return
 
-	const { favorateTracks, addTracks, setFavorateTracks } = useFavorateStore()
-	const isFavorite = useMemo(() => {
-		if (activeTrack) {
-			return favorateTracks.some((el: { title: any }) => el.title === activeTrack.title)
-		}
-		return false
-	}, [activeTrack, favorateTracks])
+		loadLrc(activeTrack.filename, activeTrack.formatedTitle)
+	}, [activeTrack])
+
 	if (!activeTrack) {
 		return (
 			<View
@@ -72,233 +63,190 @@ const SongInfoRoute = ({ activeTrack, togglePlaylist, setIndex }: any) => {
 			</View>
 		)
 	}
-	return (
-		<View style={{ flex: 1, marginTop: 40 }}>
-			<View style={styles.artworkImageContainer}>
-				<FastImage
-					source={{
-						uri: activeTrack?.artwork ?? unknownTrackImageUri,
-						priority: FastImage.priority.high,
-					}}
-					resizeMode="cover"
-					style={styles.artworkImage}
-				/>
-			</View>
-
-			<View style={{ flex: 1 }}>
-				<View style={{ marginTop: 'auto' }}>
-					<View style={{ height: 60 }}>
-						<View
-							style={{
-								flexDirection: 'row',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-						>
-							{/* Track title */}
-							<View style={styles.trackTitleContainer}>
-								<MovingText
-									text={activeTrack.title ?? ''}
-									animationThreshold={30}
-									style={styles.trackTitleText}
-								/>
-							</View>
-
-							{/* Favorite button icon */}
-							<FontAwesome
-								name={isFavorite ? 'heart' : 'heart-o'}
-								size={20}
-								color={isFavorite ? colors.primary : colors.icon}
-								style={{ marginHorizontal: 14 }}
-								onPress={() => {
-									if (isFavorite) {
-										setFavorateTracks(
-											favorateTracks.filter((el: { title: string | undefined }) => {
-												return el.title !== activeTrack.title
-											}),
-										)
-									} else {
-										addTracks(activeTrack, favorateTracks)
-									}
-								}}
-							/>
-						</View>
-
-						{/* Track artist */}
-						{activeTrack.artist && (
-							<Text numberOfLines={1} style={[styles.trackArtistText, { marginTop: 6 }]}>
-								{activeTrack.artist}
-							</Text>
-						)}
-					</View>
-
-					<PlayerProgressBar style={{ marginTop: 32 }} />
-
-					<PlayerControls style={{ marginTop: 40 }} />
-				</View>
-
-				<PlayerVolumeBar style={{ marginTop: 'auto', marginBottom: 30 }} />
-
-				<View style={utilsStyles.centeredRow}>
-					<PlayerRepeatToggle size={30} style={{ marginBottom: 6, flex: 1 }} />
-					{isExternalPlaybackAvailable && (
-						<MaterialIcons
-							onPress={() => showRoutePicker({ prioritizesVideoDevices: true })}
-							style={{ marginBottom: 6, flex: 1, textAlign: 'center' }}
-							name="airplay"
-							size={24}
-							color={isAirplayConnected ? colors.primary : 'white'}
-						/>
-					)}
-					<PlaylistToggle isPlaylistEnable={false} onPress={togglePlaylist} />
-				</View>
-				{isAirplayConnected && (
-					<View style={styles.footer}>
-						<Text>
-							{routes.length && (
-								<Text style={styles.footerContent}>
-									iPhone{` -> `}
-									{routes.map((route) => route.portName).join(', ')}
-								</Text>
-							)}
-						</Text>
-					</View>
-				)}
-			</View>
-		</View>
-	)
-}
-
-const LyricsRoute = ({ lyrics }: any) => (
-	<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-		{lyrics.length > 0 ? (
-			<LyricsDisplay lyrics={lyrics} />
-		) : (
-			<View
-				style={{
-					height: '80%',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-			>
-				<ActivityIndicator color={'#fff'} />
-			</View>
-		)}
-	</View>
-)
-
-const PlayerScreen = () => {
-	const activeTrackObj = useActiveTrack()
-	const { lyrics, loadLrc } = useLrcLoader(activeTrackObj)
-	const modalRef = useRef<BottomSheet>(null)
-	const { top } = useSafeAreaInsets()
-	const [index, setIndex] = useState(0)
-	const { t } = useTranslation()
-	const [routes] = useState([
-		{ key: 'songInfo', title: t('player.tabs.song') },
-		{ key: 'lyrics', title: t('player.tabs.lyric') },
-	])
-	// const panelRef = useRef(null)
-
-	useEffect(() => {
-		if (!activeTrackObj?.formatedTitle) return
-
-		loadLrc(activeTrackObj.filename, activeTrackObj.formatedTitle)
-	}, [activeTrackObj])
-
-	const renderScene = ({ route }: { route: Route }) => {
-		switch (route.key) {
-			case 'songInfo':
-				return (
-					<SongInfoRoute
-						setIndex={setIndex}
-						activeTrack={activeTrackObj}
-						togglePlaylist={() => {
-							if (modalRef.current) {
-								modalRef.current.snapToIndex(2)
-							}
-						}}
-					/>
-				)
-			case 'lyrics':
-				return LyricsRoute({ lyrics: lyrics })
-			default:
-				return null
-		}
-	}
-
-	const renderTabBar = (
-		props: React.JSX.IntrinsicAttributes &
-			SceneRendererProps & {
-				navigationState: NavigationState<Route>
-				scrollEnabled?: boolean
-				bounces?: boolean
-				activeColor?: string
-				inactiveColor?: string
-				pressColor?: string
-				pressOpacity?: number
-				getLabelText?: ((scene: Scene<Route>) => string | undefined) | undefined
-				getAccessible?: ((scene: Scene<Route>) => boolean | undefined) | undefined
-				getAccessibilityLabel?: ((scene: Scene<Route>) => string | undefined) | undefined
-				getTestID?: ((scene: Scene<Route>) => string | undefined) | undefined
-				renderLabel?:
-					| ((scene: Scene<Route> & { focused: boolean; color: string }) => React.ReactNode)
-					| undefined
-				renderIcon?:
-					| ((scene: Scene<Route> & { focused: boolean; color: string }) => React.ReactNode)
-					| undefined
-				renderBadge?: ((scene: Scene<Route>) => React.ReactNode) | undefined
-				renderIndicator?: ((props: TabBarIndicatorProps<Route>) => React.ReactNode) | undefined
-				renderTabBarItem?:
-					| ((props: TabBarItemProps<Route> & { key: string }) => React.ReactElement)
-					| undefined
-				onTabPress?: ((scene: Scene<Route> & Event) => void) | undefined
-				onTabLongPress?: ((scene: Scene<Route>) => void) | undefined
-				tabStyle?: StyleProp<ViewStyle>
-				indicatorStyle?: StyleProp<ViewStyle>
-				indicatorContainerStyle?: StyleProp<ViewStyle>
-				labelStyle?: StyleProp<TextStyle>
-				contentContainerStyle?: StyleProp<ViewStyle>
-				style?: StyleProp<ViewStyle>
-				gap?: number
-				testID?: string
-				android_ripple?: PressableAndroidRippleConfig
-			},
-	) => (
-		<TabBar
-			{...props}
-			indicatorStyle={{ backgroundColor: 'white' }}
-			style={{ backgroundColor: 'transparent' }}
-			labelStyle={{ color: 'white' }}
-		/>
-	)
 
 	return (
-		<GridBackground uri={activeTrackObj?.artwork || unknownTrackImageUri}>
+		<LinearGradient
+			style={{ flex: 1 }}
+			colors={imageColors ? [imageColors.background, imageColors.primary] : [colors.background]}
+		>
 			<View style={styles.overlayContainer}>
 				<DismissPlayerSymbol />
 
-				<TabView
-					navigationState={{ index, routes }}
-					renderScene={renderScene}
-					onIndexChange={setIndex}
-					initialLayout={{ width: Dimensions.get('window').width }}
-					renderTabBar={renderTabBar}
-					style={{ marginTop: top + 20, marginBottom: top }}
-				/>
+				<View style={{ flex: 1, marginTop: top + 70, marginBottom: bottom }}>
+					<Animated.View
+						style={[
+							styles.artworkImageContainer,
+							{
+								flex: headerFlex,
+								justifyContent: 'space-between',
+								alignItems: 'center',
+							},
+						]}
+					>
+						<FastImage
+							source={{
+								uri: activeTrack?.artwork ?? unknownTrackImageUri,
+								priority: FastImage.priority.high,
+							}}
+							resizeMode="cover"
+							style={styles.artworkImage}
+						/>
+						<Animated.View
+							style={[
+								styles.artworkTitleContainer,
+								,
+								{
+									opacity: lyricsModeTitleOpacity,
+									marginLeft: 20,
+
+									height: lyricsModeTitleHeight,
+									width: 400,
+								},
+							]}
+						>
+							<View
+								style={{
+									flexDirection: 'row',
+									justifyContent: 'space-between',
+									alignItems: 'center',
+								}}
+							>
+								{/* Track title */}
+								<View style={styles.trackTitleContainer}>
+									<MovingText
+										text={activeTrack.formatedTitle ?? ''}
+										animationThreshold={30}
+										style={styles.trackTitleText}
+									/>
+								</View>
+							</View>
+
+							{/* Track artist */}
+							{activeTrack.artist && (
+								<Text numberOfLines={1} style={[styles.trackArtistText, { marginTop: 6 }]}>
+									{activeTrack.artist}
+								</Text>
+							)}
+						</Animated.View>
+					</Animated.View>
+
+					<View style={{ flex: 1, justifyContent: 'flex-end' }}>
+						{showLyrics && <LyricsDisplay lyrics={lyrics}></LyricsDisplay>}
+
+						<View style={{ flexDirection: 'column' }}>
+							<Animated.View
+								style={{
+									height: titleHeight,
+									opacity: titleOpacity,
+								}}
+							>
+								<Animated.View
+									style={{
+										flexDirection: 'row',
+										justifyContent: 'space-between',
+										alignItems: 'center',
+										display: showLyrics ? 'none' : 'flex',
+									}}
+								>
+									{/* Track title */}
+									<View style={styles.trackTitleContainer}>
+										<MovingText
+											text={activeTrack.formatedTitle ?? ''}
+											animationThreshold={30}
+											style={styles.trackTitleText}
+										/>
+									</View>
+								</Animated.View>
+
+								{/* Track artist */}
+								{activeTrack.artist && (
+									<Text
+										numberOfLines={1}
+										style={[
+											styles.trackArtistText,
+											{ marginTop: 6, display: showLyrics ? 'none' : 'flex' },
+										]}
+									>
+										{activeTrack.artist}
+									</Text>
+								)}
+							</Animated.View>
+
+							<PlayerProgressBar style={{ marginTop: showLyrics ? 10 : 26 }} />
+
+							<PlayerControls style={{ marginTop: 40 }} />
+						</View>
+
+						{/* <PlayerVolumeBar style={{ marginTop: 'auto', marginBottom: 30 }} /> */}
+
+						<View style={utilsStyles.centeredRow}>
+							<PlayerRepeatToggle size={30} style={{ marginBottom: 6 }} />
+							{isExternalPlaybackAvailable && (
+								<MaterialIcons
+									onPress={() => showRoutePicker({ prioritizesVideoDevices: true })}
+									style={{ marginBottom: 6, flex: 1, textAlign: 'right' }}
+									name="airplay"
+									size={24}
+									color={isAirplayConnected ? colors.primary : 'white'}
+								/>
+							)}
+							<LyricsToggle
+								isPlaylistEnable={showLyrics}
+								onPress={() => {
+									if (!showLyrics) {
+										lyricsModeTitleHeight.value = withTiming(60)
+										titleHeight.value = withTiming(0)
+										lyricsOpacy.value = withSpring(1)
+										lyricsModeTitleOpacity.value = withSpring(1)
+										titleOpacity.value = withSpring(0)
+										headerFlex.value = withSpring(0.12, {
+											damping: 20,
+										})
+									} else {
+										lyricsModeTitleHeight.value = withTiming(0)
+										titleHeight.value = withTiming(60)
+										lyricsOpacy.value = withSpring(0)
+										lyricsModeTitleOpacity.value = withSpring(0)
+										titleOpacity.value = withSpring(1)
+										headerFlex.value = withSpring(1, {
+											damping: 20,
+										})
+									}
+									setShowLyrics(!showLyrics)
+								}}
+							/>
+							<PlaylistToggle
+								isPlaylistEnable={false}
+								onPress={() => {
+									modalRef.current.snapToIndex(2)
+								}}
+							/>
+						</View>
+						{isAirplayConnected && (
+							<View style={styles.footer}>
+								<Text>
+									{routes.length && (
+										<Text style={styles.footerContent}>
+											iPhone{` -> `}
+											{routes.map((route) => route.portName).join(', ')}
+										</Text>
+									)}
+								</Text>
+							</View>
+						)}
+					</View>
+				</View>
 			</View>
 			<CustomBottomSheet
 				onClose={() => {
 					if (modalRef.current) {
-						modalRef.current.snapToIndex(0)
+						modalRef.current.close()
 					}
 				}}
 				modalRef={modalRef}
 				content={<PlaylistsList></PlaylistsList>}
 			></CustomBottomSheet>
-			{/* {render()} */}
-		</GridBackground>
+		</LinearGradient>
 	)
 }
 
@@ -331,21 +279,27 @@ const DismissPlayerSymbol = () => {
 }
 
 const styles = StyleSheet.create({
+	artworkTitleContainer: {
+		height: 0,
+	},
 	overlayContainer: {
 		...defaultStyles.container,
 		paddingHorizontal: screenPadding.horizontal,
 		backgroundColor: 'rgba(0,0,0,0.5)',
 	},
-	header: {
-		display: 'flex',
-		justifyContent: 'center',
-		color: 'white',
-	},
 	artworkImageContainer: {
+		flex: 1,
+		shadowOffset: {
+			width: 0,
+			height: 8,
+		},
+		width: '100%',
 		shadowOpacity: 0.44,
+		shadowRadius: 11.0,
 		flexDirection: 'row',
-		justifyContent: 'center',
-		height: '45%',
+		// justifyContent: 'flex-start',
+		// height: '49.9%',
+		aspectRatio: 1,
 	},
 	artworkImage: {
 		width: '100%',
@@ -367,35 +321,6 @@ const styles = StyleSheet.create({
 		fontSize: fontSize.base,
 		opacity: 0.8,
 		maxWidth: '90%',
-	},
-	panelContainer: {
-		flex: 1,
-		// backgroundColor: 'white',
-		borderTopLeftRadius: 20,
-		borderTopRightRadius: 20,
-		padding: 16,
-	},
-	panelTitle: {
-		fontSize: 20,
-		fontWeight: 'bold',
-		color: 'white',
-		paddingVertical: 8,
-		// paddingHorizontal: 16,
-		paddingLeft: 8,
-		marginBottom: 16,
-	},
-	closeButton: {
-		// marginTop: 16,
-		// backgroundColor: colors.primary,
-		borderRadius: 8,
-		paddingVertical: 8,
-		paddingHorizontal: 16,
-		paddingRight: 8,
-		alignSelf: 'center',
-	},
-	closeButtonText: {
-		color: 'white',
-		fontSize: 16,
 	},
 	footer: {
 		justifyContent: 'center',
