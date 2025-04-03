@@ -17,7 +17,7 @@
 		"ahooks": "^3.8.0",
 		"axios": "^1.6.8",
 		"axios-retry": "^4.4.1",
-		"expo": "~50.0.14",
+		"expo": "^48.0.0",
 		"expo-blur": "~12.9.2",
 		"expo-constants": "~15.4.5",
 		"expo-dev-client": "~3.3.11",
